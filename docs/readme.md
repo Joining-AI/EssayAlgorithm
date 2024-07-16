@@ -1,4 +1,8 @@
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+
 [原文链接](https://arxiv.org/html/2407.00079v3)
+
 ## 概述
 Mooncake 的核心创新点在于它对KVCache的复用机制，和其他工程上实现大规模复用的技巧
 
@@ -16,60 +20,21 @@ Mooncake 的核心创新点在于它对KVCache的复用机制，和其他工程�
 
 # KVCache 缓存机制
 
-<style>
-.flowchart {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 100%;
-    overflow: auto;
-}
 
-.flowchart .node {
-    padding: 10px 20px;
-    margin: 10px;
-    border: 2px solid #000;
-    border-radius: 5px;
-    text-align: center;
-}
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'width': '100%', 'height': '100%' }, 'flowchart': { 'useMaxWidth': true, 'htmlLabels': true }}}%%
+graph LR
+    A[开始] --> B[前缀哈希处理]
+    B --> C[全局调度<br>估计时间]
+    C --> D[分配请求]
+    D --> E{SLO?}
+    E -->|满足| F[处理]
+    E -->|不满足| G[429响应]
+    F --> H[结束]
+    G --> H[结束]
 
-.flowchart .arrow {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
+```
 
-.flowchart .arrow::before {
-    content: '↓';
-    font-size: 20px;
-    display: inline-block;
-    margin: 0 5px;
-}
-</style>
-
-<div class="flowchart">
-    <div class="node">开始</div>
-    <div class="arrow"></div>
-    <div class="node">前缀哈希处理</div>
-    <div class="arrow"></div>
-    <div class="node">全局调度<br>估计时间</div>
-    <div class="arrow"></div>
-    <div class="node">分配请求</div>
-    <div class="arrow"></div>
-    <div class="node">SLO?</div>
-    <div class="arrow"></div>
-    <div class="node">满足</div>
-    <div class="arrow"></div>
-    <div class="node">处理</div>
-    <div class="arrow"></div>
-    <div class="node">结束</div>
-    <div class="arrow"></div>
-    <div class="node">不满足</div>
-    <div class="arrow"></div>
-    <div class="node">429响应</div>
-    <div class="arrow"></div>
-    <div class="node">结束</div>
-</div>
 
 ### 前缀哈希
 - **前缀哈希**：每个块的哈希值不仅包含当前块的信息，还包含其所有前缀块的信息。这样做的目的是为了在缓存查找时能够更精确地匹配前缀。
